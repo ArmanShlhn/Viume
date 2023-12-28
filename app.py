@@ -53,8 +53,9 @@ def predict_image(file):
         class_name = class_mapping.get(class_id, f"Unknown Class {class_id}")
 
         # Display class labels
-        label = f"Class: {class_name}"
+        label = f"Class: {class_name}" if class_name else "Unknown Class"
         draw.text((x_min, y_min - 10), label, fill="red")
+
 
     # Menghitung persentase deteksi untuk setiap kelas
     class_percentage = {class_id: (count / detections_count) * 100 for class_id, count in class_detection_count.items()}
