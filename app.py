@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 import os  # Import the os module for path manipulation
-from torchvision import transforms
 from PIL import Image, ImageDraw
 import torch
 import io
