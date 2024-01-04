@@ -3,6 +3,8 @@ import numpy as np
 import os  # Import the os module for path manipulation
 from PIL import Image, ImageDraw
 import torch
+import pandas as pd
+import matplotlib.pyplot as plt
 import io
 import json
 
@@ -20,18 +22,18 @@ def predict_image(file):
     img_with_boxes = img.copy()
     draw = ImageDraw.Draw(img_with_boxes)
 
-    # Dictionary untuk memetakan ID kelas ke nama kelas
+    # Dictionary untuk memetakan ID kelas ke nama kelas dan warna bounding box
     class_mapping = {
-        0: "ASC-H",
-        1: "ASCH-US",
-        2: "HSIL",
-        3: "LSIL",
-        4: "Normal",
-        5: "SCC",
-    # Tambahkan mapping lain sesuai kebutuhan
+        0: ("ASC-H", "red"),
+        1: ("ASCH-US", "yellow"),
+        2: ("HSIL", "purple"),
+        3: ("LSIL", "green"),
+        4: ("Normal", "blue"),
+        5: ("SCC", "pink"),
+        # Tambahkan mapping lain sesuai kebutuhan
     }
 
-# Melakukan iterasi pada objek pred_img.xyxy[0]
+    # Melakukan iterasi pada objek pred_img.xyxy[0]
     detections_count = len(pred_img.xyxy[0])
     class_count = len(class_mapping)
 
@@ -45,26 +47,40 @@ def predict_image(file):
         # Increment count untuk kelas ini
         class_detection_count[class_id] += 1
 
-        # Draw bounding box
-        draw.rectangle([x_min, y_min, x_max, y_max], outline="red", width=2)
-
         # Mendapatkan nama kelas berdasarkan ID kelas
-        class_name = class_mapping.get(class_id, f"Unknown Class {class_id}")
+        class_name, box_color = class_mapping.get(class_id, (f"Unknown Class {class_id}", "white"))
+
+        # Draw bounding box with specified color
+        draw.rectangle([x_min, y_min, x_max, y_max], outline=box_color, width=2)
 
         # Display class labels
         label = f"Class: {class_name}" if class_name else "Unknown Class"
-        draw.text((x_min, y_min - 10), label, fill="red")
-
-
-    # Menghitung persentase deteksi untuk setiap kelas
+        draw.text((x_min, y_min - 10), label, fill=box_color)
+    
+    # Menampilkan diagram batang untuk persentase deteksi
     class_percentage = {class_id: (count / detections_count) * 100 for class_id, count in class_detection_count.items()}
 
-    # Menampilkan persentase deteksi untuk setiap kelas
-    for class_id, percentage in class_percentage.items():
-        class_name = class_mapping.get(class_id, f"Unknown Class {class_id}")
-        st.write(f"{class_name}: {percentage:.2f}%")
-        
+    # Membuat DataFrame dari dictionary persentase untuk digunakan dalam plot
+    df = pd.DataFrame(list(class_percentage.items()), columns=['Kelas', 'Persentase'])
+
+    # Menambahkan kolom "Nama Kelas" ke DataFrame
+    df['Nama Kelas'] = [class_mapping.get(class_id, (f"Kelas Tidak Dikenal {class_id}", "putih"))[0] for class_id in df['Kelas']]
+
+    # Menampilkan diagram batang dengan label kelas dan persentase di dalamnya (sumbu y)
+    fig, ax = plt.subplots()
+    bars = ax.bar(df['Nama Kelas'], df['Persentase'])
+
+    # Menambahkan label persentase di atas batang diagram
+    for bar in bars:
+        yval = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, yval + 1, f"{yval:.2f}%", ha='center', va='bottom')
+
+    # Menampilkan diagram batang menggunakan st.pyplot
+    st.pyplot(fig)
+
+
     return img_with_boxes
+
 
 
 def page_scanner():
