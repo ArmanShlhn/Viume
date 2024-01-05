@@ -1,6 +1,6 @@
-streamlit==1.15.0
-Pillow==8.3.2
-numpy==1.21.1
-torch==1.13.1
-pandas==1.3.3
-matplotlib==3.4.3
+streamlit
+Pillow
+numpy
+torch
+pandas
+matplotlib
