@@ -1,10 +1,12 @@
 import streamlit as st
 import numpy as np
+import os  # Import the os module for path manipulation
 from PIL import Image, ImageDraw
 import torch
 import pandas as pd
 import matplotlib.pyplot as plt
 import io
+import json
 
 # Load YOLOv5 model
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='C:/Kuliah/model/SDAA/model/best.pt')
