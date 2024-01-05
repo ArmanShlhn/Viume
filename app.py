@@ -7,6 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import io
 import json
+import cv2
 
 # Load YOLOv5 model
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='C:/Kuliah/model/SDAA/model/best.pt')
