@@ -9,7 +9,7 @@ import io
 import json
 
 # Load YOLOv5 model
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='C:/Kuliah/model/SDAA/model/best.pt')
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='model/best.pt')
 
 def predict_image(file):
     image_bytes = file.read()
